@@ -21,6 +21,11 @@ import dateutil.parser
 HASH_PREFIX_SIZE = 1024 * 1024
 
 
+class ContentDescription(NamedTuple):
+    size: int
+    hash: str
+
+
 class MovedFile(NamedTuple):
     old: pathlib.Path
     new: pathlib.Path
@@ -35,13 +40,14 @@ class NewFile(NamedTuple):
     path: pathlib.Path
 
 
+class ChangedFile(NamedTuple):
+    path: pathlib.Path
+    old_content: ContentDescription
+    new_content: ContentDescription
+
+
 class MissingFile(NamedTuple):
     path: pathlib.Path
-
-
-class ContentDescription(NamedTuple):
-    size: int
-    hash: str
 
 
 class FileDescription(NamedTuple):
@@ -129,6 +135,7 @@ def describe_differences(
     expected: Dict[pathlib.Path, FileDescription],
     current: Dict[pathlib.Path, MaybeFileDescription],
 ) -> Tuple[
+    List[ChangedFile],
     List[CopiedFile],
     List[MovedFile],
     List[MissingFile],
@@ -138,13 +145,22 @@ def describe_differences(
     actual = {}  # type: Dict[pathlib.Path, FileDescription]
     unexpected = {}  # type: Dict[pathlib.Path, FileDescription]
 
+    changed = []  # type: List[ChangedFile]
+
     for filepath, description in current.items():
         if isinstance(description, MissingFile):
             missing.append(filepath)
         else:
             actual[filepath] = description
-            if filepath not in expected:
+            expected_description = expected.get(filepath)
+            if expected_description is None:
                 unexpected[filepath] = description
+            elif expected_description != description:
+                changed.append(ChangedFile(
+                    path=filepath,
+                    old_content=expected_description.content,
+                    new_content=description.content,
+                ))
 
     path_by_expected_content = path_by_content(expected.values())
     path_by_actual_content = path_by_content(
@@ -175,7 +191,7 @@ def describe_differences(
         else:
             new_files.append(description)
 
-    return copied, moved, deleted, new_files
+    return changed, copied, moved, deleted, new_files
 
 
 @click.group()
@@ -204,7 +220,15 @@ def audit(directory: str, references: Iterable[TextIO]) -> None:
         if filepath not in actual:
             actual[filepath] = describe(filepath)
 
-    copied, moved, deleted, new_files = describe_differences(expected, actual)
+    changed, copied, moved, deleted, new_files = describe_differences(
+        expected,
+        actual,
+    )
+
+    if changed:
+        print("# Changed files:")
+        for change in sorted(changed):
+            print(change.path)
 
     if copied:
         print("# Copied files:")
