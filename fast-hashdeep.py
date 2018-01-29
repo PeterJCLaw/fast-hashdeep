@@ -50,7 +50,14 @@ class FileDescription(NamedTuple):
     path: pathlib.Path
 
     @classmethod
-    def create(cls, *, modified: datetime.datetime, size: int, hash: str, path: pathlib.Path) -> 'FileDescription':
+    def create(
+        cls,
+        *,
+        modified: datetime.datetime,
+        size: int,
+        hash: str,
+        path: pathlib.Path,
+    ) -> 'FileDescription':
         return cls(
             modified=modified,
             content=ContentDescription(size=size, hash=hash),
