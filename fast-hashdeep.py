@@ -106,7 +106,10 @@ class ChangeSummary(_ChangeSummary):
             if not items:
                 return ''
 
-            items_description = "\n".join(template.format(x) for x in items)
+            items_description = "\n".join(
+                template.format(x)
+                for x in sorted(items)
+            )
             return f"# {title}:\n{items_description}"
 
         return "\n".join(x for x in (
