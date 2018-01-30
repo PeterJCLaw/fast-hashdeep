@@ -214,15 +214,15 @@ def audit(directory: str, references: Iterable[TextIO]) -> None:
     """Audit records in the given files"""
 
     expected = load_descriptions(references)
-    actual = {p: describe(p) for p in expected.keys()}
+    current = {p: describe(p) for p in expected.keys()}
 
     for filepath in walk_files(pathlib.Path(directory)):
-        if filepath not in actual:
-            actual[filepath] = describe(filepath)
+        if filepath not in current:
+            current[filepath] = describe(filepath)
 
     changed, copied, moved, deleted, new_files = describe_differences(
         expected,
-        actual,
+        current,
     )
 
     if changed:
