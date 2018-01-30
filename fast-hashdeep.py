@@ -4,7 +4,16 @@ import datetime
 import hashlib
 import os.path
 import pathlib
-from typing import Dict, Iterable, Iterator, List, NamedTuple, TextIO, Union
+from typing import (
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    NamedTuple,
+    TextIO,
+    Union
+)
 
 import click
 import dateutil.parser
@@ -152,8 +161,8 @@ def load_descriptions(references: Iterable[TextIO]) -> Dict[pathlib.Path, FileDe
 
 
 def describe_differences(
-    expected: Dict[pathlib.Path, FileDescription],
-    current: Dict[pathlib.Path, MaybeFileDescription],
+    expected: Mapping[pathlib.Path, FileDescription],
+    current: Mapping[pathlib.Path, MaybeFileDescription],
 ) -> ChangeSummary:
     missing = []  # type: List[pathlib.Path]
     actual = {}  # type: Dict[pathlib.Path, FileDescription]
