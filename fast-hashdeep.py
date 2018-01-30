@@ -102,7 +102,7 @@ class ChangeSummary(_ChangeSummary):
         return any(x for x in self)
 
     def describe(self) -> str:
-        def sorted_descriptions(items, title, template):
+        def descriptions(items, title, template):
             if not items:
                 return ''
 
@@ -113,11 +113,11 @@ class ChangeSummary(_ChangeSummary):
             return f"# {title}:\n{items_description}"
 
         return "\n".join(x for x in (
-            sorted_descriptions(self.changed, "Changed files", "{0.path}"),
-            sorted_descriptions(self.copied, "Copied files", "{0.old} (from {0.new})"),
-            sorted_descriptions(self.moved, "Moved files", "{0.old} (from {0.new})"),
-            sorted_descriptions(self.deleted, "Deleted files", "{0.path}"),
-            sorted_descriptions(self.added, "Added files", "{0}"),
+            descriptions(self.changed, "Changed files", "{0.path}"),
+            descriptions(self.copied, "Copied files", "{0.old} (from {0.new})"),
+            descriptions(self.moved, "Moved files", "{0.old} (from {0.new})"),
+            descriptions(self.deleted, "Deleted files", "{0.path}"),
+            descriptions(self.added, "Added files", "{0}"),
         ) if x)
 
 
