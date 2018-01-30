@@ -1,0 +1,16 @@
+#!/bin/sh
+
+find tests -type f -print0 | xargs -0 touch --date='2018-01-29 20:00:00.000000'
+
+DIFF=$(which colordiff || which diff)
+
+result=0
+for d in all-changes move-only unchanged
+do
+    echo "Testing $d"
+    ./fast-hashdeep.py audit tests/$d tests/$d.record > tests/audit-$d.output
+    $DIFF -u tests/audit-$d.expected tests/audit-$d.output
+    result=$((result | $?))
+done
+
+exit $result
