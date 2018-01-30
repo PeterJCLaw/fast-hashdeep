@@ -249,5 +249,29 @@ def audit(directory: str, references: Iterable[TextIO]) -> None:
         print(change_summary.describe())
 
 
+@cli.command()
+@click.argument('baseline', type=click.File('rt'))
+@click.argument('target', type=click.File('rt'))
+def compare(baseline: TextIO, target: TextIO) -> None:
+    """Compare records in the given files"""
+
+    baseline_descriptions = load_descriptions([baseline])
+    target_descriptions = dict(
+        load_descriptions([target]),
+    )  # type: Dict[pathlib.Path, MaybeFileDescription]
+
+    for filepath in baseline_descriptions.keys():
+        if filepath not in target_descriptions:
+            target_descriptions[filepath] = MissingFile(filepath)
+
+    change_summary = describe_differences(
+        baseline_descriptions,
+        target_descriptions,
+    )
+
+    if change_summary:
+        print(change_summary.describe())
+
+
 if __name__ == '__main__':
     cli()
