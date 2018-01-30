@@ -4,16 +4,7 @@ import datetime
 import hashlib
 import os.path
 import pathlib
-from typing import (
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    NamedTuple,
-    TextIO,
-    Tuple,
-    Union
-)
+from typing import Dict, Iterable, Iterator, List, NamedTuple, TextIO, Union
 
 import click
 import dateutil.parser
@@ -89,6 +80,35 @@ class FileDescription(NamedTuple):
         ))
 
 
+class _ChangeSummary(NamedTuple):
+    changed: List[ChangedFile]
+    copied: List[CopiedFile]
+    moved: List[MovedFile]
+    deleted: List[MissingFile]
+    added: List[FileDescription]
+
+
+class ChangeSummary(_ChangeSummary):
+    def __bool__(self) -> bool:
+        return any(x for x in self)
+
+    def describe(self) -> str:
+        def sorted_descriptions(items, title, template):
+            if not items:
+                return ''
+
+            items_description = "\n".join(template.format(x) for x in items)
+            return f"# {title}:\n{items_description}"
+
+        return "\n".join(x for x in (
+            sorted_descriptions(self.changed, "Changed files", "{0.path}"),
+            sorted_descriptions(self.copied, "Copied files", "{0.old} (from {0.new})"),
+            sorted_descriptions(self.moved, "Moved files", "{0.old} (from {0.new})"),
+            sorted_descriptions(self.deleted, "Deleted files", "{0.path}"),
+            sorted_descriptions(self.added, "Added files", "{0}"),
+        ) if x)
+
+
 MaybeFileDescription = Union[MissingFile, FileDescription]
 
 
@@ -134,13 +154,7 @@ def load_descriptions(references: Iterable[TextIO]) -> Dict[pathlib.Path, FileDe
 def describe_differences(
     expected: Dict[pathlib.Path, FileDescription],
     current: Dict[pathlib.Path, MaybeFileDescription],
-) -> Tuple[
-    List[ChangedFile],
-    List[CopiedFile],
-    List[MovedFile],
-    List[MissingFile],
-    List[FileDescription],
-]:
+) -> ChangeSummary:
     missing = []  # type: List[pathlib.Path]
     actual = {}  # type: Dict[pathlib.Path, FileDescription]
     unexpected = {}  # type: Dict[pathlib.Path, FileDescription]
@@ -191,7 +205,7 @@ def describe_differences(
         else:
             new_files.append(description)
 
-    return changed, copied, moved, deleted, new_files
+    return ChangeSummary(changed, copied, moved, deleted, new_files)
 
 
 @click.group()
@@ -220,35 +234,10 @@ def audit(directory: str, references: Iterable[TextIO]) -> None:
         if filepath not in current:
             current[filepath] = describe(filepath)
 
-    changed, copied, moved, deleted, new_files = describe_differences(
-        expected,
-        current,
-    )
+    change_summary = describe_differences(expected, current)
 
-    if changed:
-        print("# Changed files:")
-        for change in sorted(changed):
-            print(change.path)
-
-    if copied:
-        print("# Copied files:")
-        for copy in sorted(copied):
-            print(f"{copy.new} (from {copy.old})")
-
-    if moved:
-        print("# Moved files:")
-        for move in sorted(moved):
-            print(f"{move.new} (from {move.old})")
-
-    if deleted:
-        print("# Deleted files:")
-        for deleted_file in sorted(deleted):
-            print(deleted_file.path)
-
-    if new_files:
-        print("# New files:")
-        for new_file in sorted(new_files):
-            print(new_file)
+    if change_summary:
+        print(change_summary.describe())
 
 
 if __name__ == '__main__':
