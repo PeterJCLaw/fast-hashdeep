@@ -276,5 +276,28 @@ def compare(baseline: TextIO, target: TextIO) -> None:
         print(change_summary.describe())
 
 
+@cli.command('find-duplicates')
+@click.argument('references', required=True, nargs=-1, type=click.File('rt'))
+def find_duplicates(references: List[TextIO]) -> None:
+    """Search for duplicates within the given files"""
+
+    all_by_content = {}  # type: Dict[ContentDescription, List[pathlib.Path]]
+
+    descriptions = load_descriptions(references)
+    for path, description in descriptions.items():
+        all_by_content.setdefault(description.content, []).append(path)
+
+    duplicates = {x: y for x, y, in all_by_content.items() if len(y) > 1}
+
+    if not duplicates:
+        print("No duplicates")
+        return
+
+    for content, paths in duplicates.items():
+        print(f"Duplicate content {content.hash} (size {content.size})")
+        for path in sorted(paths):
+            print(f" - {path}")
+
+
 if __name__ == '__main__':
     cli()
