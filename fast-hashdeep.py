@@ -72,7 +72,7 @@ class FileDescription(NamedTuple):
 
     @classmethod
     def parse(cls, string: str, relative_to: pathlib.Path) -> 'FileDescription':
-        modified, size, hash_, path = string.strip().split(',')
+        modified, size, hash_, path = string.strip().split(',', maxsplit=3)
         return cls.create(
             modified=dateutil.parser.parse(modified),
             size=int(size),
