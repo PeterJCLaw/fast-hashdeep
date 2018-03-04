@@ -1,3 +1,49 @@
+#[macro_use]
+extern crate structopt;
+
+use std::path::PathBuf;
+use std::vec::Vec;
+use structopt::StructOpt;
+
+#[derive(Debug, StructOpt)]
+#[structopt(name="fash-hashdeep")]
+enum Opt {
+    #[structopt(name="record")]
+    /// Record the current state of the directory
+    Record {
+        #[structopt(parse(from_os_str))]
+        directory: PathBuf,
+    },
+
+    #[structopt(name="audit")]
+    /// Audit records in the given files
+    Audit {
+        #[structopt(parse(from_os_str))]
+        directory: PathBuf,
+
+        #[structopt(parse(from_os_str))]
+        references: Vec<PathBuf>,
+    },
+
+    #[structopt(name="compare")]
+    /// Compare records in the given files
+    Compare {
+        #[structopt(parse(from_os_str))]
+        baseline: PathBuf,
+
+        #[structopt(parse(from_os_str))]
+        target: PathBuf,
+    },
+
+    #[structopt(name="find-duplidates")]
+    /// Search for duplicates within the given files
+    FindDuplidates {
+        #[structopt(parse(from_os_str))]
+        references: Vec<PathBuf>,
+    },
+}
+
 fn main() {
-    println!("Hello, world!");
+    let matches = Opt::from_args();
+    println!("{:?}", matches);
 }
