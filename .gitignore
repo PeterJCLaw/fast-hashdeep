@@ -1,3 +1,5 @@
 /.mypy_cache
 /.vscode
 /tests/*.output
+/target/
+**/*.rs.bk

@@ -1,0 +1,6 @@
+[package]
+name = "fast-hashdeep"
+version = "0.1.0"
+authors = ["Peter Law <PeterJCLaw@gmail.com>"]
+
+[dependencies]
