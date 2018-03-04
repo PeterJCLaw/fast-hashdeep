@@ -6,16 +6,16 @@ use std::vec::Vec;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name="fash-hashdeep")]
+#[structopt(name = "fash-hashdeep")]
 enum Opt {
-    #[structopt(name="record")]
+    #[structopt(name = "record")]
     /// Record the current state of the directory
     Record {
         #[structopt(parse(from_os_str))]
         directory: PathBuf,
     },
 
-    #[structopt(name="audit")]
+    #[structopt(name = "audit")]
     /// Audit records in the given files
     Audit {
         #[structopt(parse(from_os_str))]
@@ -25,7 +25,7 @@ enum Opt {
         references: Vec<PathBuf>,
     },
 
-    #[structopt(name="compare")]
+    #[structopt(name = "compare")]
     /// Compare records in the given files
     Compare {
         #[structopt(parse(from_os_str))]
