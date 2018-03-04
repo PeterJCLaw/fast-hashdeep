@@ -5,6 +5,9 @@ use std::path::PathBuf;
 use std::vec::Vec;
 use structopt::StructOpt;
 
+mod handlers;
+use handlers::{record, audit, compare, find_duplicates};
+
 #[derive(Debug, StructOpt)]
 #[structopt(name = "fash-hashdeep")]
 enum Opt {
@@ -45,5 +48,14 @@ enum Opt {
 
 fn main() {
     let matches = Opt::from_args();
-    println!("{:?}", matches);
+
+    match matches {
+        Opt::Record { directory } => record(directory),
+        Opt::Audit {
+            directory,
+            references,
+        } => audit(directory, references),
+        Opt::Compare { baseline, target } => compare(baseline, target),
+        Opt::FindDuplicates { references } => find_duplicates(references),
+    }
 }
