@@ -35,9 +35,9 @@ enum Opt {
         target: PathBuf,
     },
 
-    #[structopt(name="find-duplidates")]
+    #[structopt(name = "find-duplicates")]
     /// Search for duplicates within the given files
-    FindDuplidates {
+    FindDuplicates {
         #[structopt(parse(from_os_str))]
         references: Vec<PathBuf>,
     },
