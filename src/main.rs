@@ -1,10 +1,14 @@
 #[macro_use]
 extern crate structopt;
 
+extern crate md5;
+extern crate walkdir;
+
 use std::path::PathBuf;
 use std::vec::Vec;
 use structopt::StructOpt;
 
+mod common;
 mod handlers;
 use handlers::{record, audit, compare, find_duplicates};
 

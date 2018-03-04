@@ -4,4 +4,6 @@ version = "0.1.0"
 authors = ["Peter Law <PeterJCLaw@gmail.com>"]
 
 [dependencies]
+md5 = "0.3"
 structopt = "0.2"
+walkdir = "2"
