@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::borrow::ToOwned;
 use std::fs::File;
 use std::io::Read;
 use std::io::BufReader;
@@ -15,6 +16,7 @@ use chrono::naive::NaiveDateTime;
 use md5;
 use walkdir::WalkDir;
 
+const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 const HASH_PREFIX_SIZE: usize = 1024 * 1024;
 
 #[derive(Debug, Eq, Hash, PartialEq)]
@@ -58,6 +60,33 @@ pub struct FileDescription {
     content: ContentDescription,
     path: PathBuf,
 }
+
+
+impl FileDescription {
+    pub fn parse(string: &str, relative_to: &Path) -> Self {
+        let mut count = 0;
+        let maxsplit = 3;
+        let parts: Vec<&str> = string
+            .trim()
+            .split(|c| {
+                let should_split = c == ',' && count < maxsplit;
+                if should_split {
+                    count += 1;
+                }
+                should_split
+            })
+            .collect();
+        FileDescription {
+            modified: NaiveDateTime::parse_from_str(parts[0], DATE_FORMAT).unwrap(),
+            content: ContentDescription {
+                size: parts[1].parse().unwrap(),
+                hash: parts[2].to_owned(),
+            },
+            path: relative_to.join(parts[3]),
+        }
+    }
+}
+
 
 #[derive(Debug)]
 pub struct ChangeSummary {
