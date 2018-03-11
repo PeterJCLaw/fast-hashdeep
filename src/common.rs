@@ -114,7 +114,7 @@ pub fn walk_files(directory: &Path) -> &Iterator<Item = &Path> {
 
 
 pub fn hash_file(filepath: PathBuf) -> String {
-    let f = File::open(filepath).unwrap();
+    let mut f = File::open(filepath).unwrap();
     let mut buffer = [0; HASH_PREFIX_SIZE];
     f.read_exact(&mut buffer);
     let digest = md5::compute(&buffer[..]);
