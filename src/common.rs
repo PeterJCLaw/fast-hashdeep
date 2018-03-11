@@ -9,7 +9,6 @@ use std::iter::Iterator;
 use std::path::PathBuf;
 use std::path::Path;
 use std::vec::Vec;
-use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use chrono::naive::NaiveDateTime;
