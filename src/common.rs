@@ -9,7 +9,9 @@ use std::path::PathBuf;
 use std::path::Path;
 use std::vec::Vec;
 use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
+use chrono::naive::NaiveDateTime;
 use md5;
 use walkdir::WalkDir;
 
@@ -52,7 +54,7 @@ pub struct MissingFile {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct FileDescription {
-    modified: SystemTime,
+    modified: NaiveDateTime,
     content: ContentDescription,
     path: PathBuf,
 }
@@ -96,7 +98,15 @@ pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
     match metadata_result {
         Err(_) => MaybeFileDescription::MissingFile(MissingFile { path: filepath }),
         Ok(metadata) => MaybeFileDescription::FileDescription(FileDescription {
-            modified: metadata.modified().unwrap(),
+            modified: NaiveDateTime::from_timestamp(
+                metadata
+                    .modified()
+                    .unwrap()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs() as i64,
+                0,
+            ),
             content: ContentDescription {
                 size: metadata.len(),
                 hash: hash_file(filepath),

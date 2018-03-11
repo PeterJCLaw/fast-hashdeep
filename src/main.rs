@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate structopt;
 
+extern crate chrono;
 extern crate md5;
 extern crate walkdir;
 
