@@ -117,9 +117,11 @@ pub fn load_descriptions<'a>(references: Iterator<Item=Path>) -> HashMap<Path, F
     HashMap::from_iter(
         references
             .flat_map(|path| {
-                BufReader::new(File::open(path).unwrap()).lines().map(|line| {
-                    FileDescription::parse(line, path.parent())
-                })
+                BufReader::new(File::open(path).unwrap()).lines().map(
+                    |line| {
+                        FileDescription::parse(line, path.parent())
+                    },
+                )
             })
             .map(|x| (x.content, x.path)),
     )
