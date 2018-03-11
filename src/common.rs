@@ -110,7 +110,7 @@ pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
 pub fn path_by_content(
     descriptions: &IntoIterator<Item = FileDescription, IntoIter = Iterator<Item = FileDescription>>,
 ) -> HashMap<ContentDescription, PathBuf> {
-    HashMap::from_iter(descriptions.map(|x| (x.content, x.path)))
+    HashMap::from_iter(descriptions.into_iter().map(|x| (x.content, x.path)))
 }
 
 
@@ -119,6 +119,7 @@ pub fn load_descriptions(
 ) -> HashMap<PathBuf, FileDescription> {
     HashMap::from_iter(
         references
+            .into_iter()
             .flat_map(|path| {
                 BufReader::new(File::open(path).unwrap()).lines().map(
                     |line| {
