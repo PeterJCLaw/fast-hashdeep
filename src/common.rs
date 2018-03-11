@@ -90,15 +90,15 @@ pub fn hash_file(filepath: Path) -> str {
 pub fn describe<'a>(filepath: Path) -> MaybeFileDescription<'a> {
     let metadata_result = filepath.metadata();
     match metadata_result {
-        Err(_) => MissingFile { path: filepath },
-        Ok(metadata) => FileDescription {
+        Err(_) => MaybeFileDescription(MissingFile { path: filepath }),
+        Ok(metadata) => MaybeFileDescription(FileDescription {
             modified: metadata.modified().unwrap(),
             content: ContentDescription {
                 size: metadata.len(),
                 hash: hash_file(filepath),
             },
             path: filepath,
-        },
+        }),
     }
 }
 
