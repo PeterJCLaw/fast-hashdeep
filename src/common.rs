@@ -83,7 +83,7 @@ pub fn hash_file(filepath: Path) -> str {
     let mut buffer = [0; HASH_PREFIX_SIZE];
     f.read_exact(&mut buffer);
     let digest = md5::compute(buffer);
-    format!("{:x}", digest);
+    format!("{:x}", digest)
 }
 
 
