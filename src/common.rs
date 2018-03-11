@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fs::File;
+use std::io::Read;
 use std::io::BufReader;
 use std::io::BufRead;
 use std::iter::FromIterator;
