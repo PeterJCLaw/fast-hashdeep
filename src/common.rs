@@ -11,41 +11,49 @@ use walkdir::WalkDir;
 
 const HASH_PREFIX_SIZE: usize = 1024 * 1024;
 
+#[derive(Debug)]
 pub struct ContentDescription<'a> {
     size: u64,
     hash: &'a str,
 }
 
+#[derive(Debug)]
 pub struct MovedFile<'a> {
     old: &'a Path,
     new: &'a Path,
 }
 
+#[derive(Debug)]
 pub struct CopiedFile<'a> {
     old: &'a Path,
     new: &'a Path,
 }
 
+#[derive(Debug)]
 pub struct NewFile<'a> {
     path: &'a Path,
 }
 
+#[derive(Debug)]
 pub struct ChangedFile<'a> {
     path: &'a Path,
     old_content: ContentDescription<'a>,
     new_content: ContentDescription<'a>,
 }
 
+#[derive(Debug)]
 pub struct MissingFile<'a> {
     path: &'a Path,
 }
 
+#[derive(Debug)]
 pub struct FileDescription<'a> {
     modified: SystemTime,
     content: ContentDescription<'a>,
     path: &'a Path,
 }
 
+#[derive(Debug)]
 pub struct ChangeSummary<'a> {
     changed: Vec<ChangedFile<'a>>,
     copied: Vec<CopiedFile<'a>>,
