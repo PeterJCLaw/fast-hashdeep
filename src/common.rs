@@ -125,7 +125,7 @@ where
             .flat_map(|path| {
                 BufReader::new(File::open(path).unwrap()).lines().map(
                     |line| {
-                        FileDescription::parse(line, path.parent())
+                        FileDescription::parse(line.unwrap().as_str(), path.parent().unwrap())
                     },
                 )
             })
