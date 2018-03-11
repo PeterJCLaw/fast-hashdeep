@@ -84,7 +84,7 @@ pub fn hash_file(filepath: Path) -> str {
     let f = File::open(filepath);
     let mut buffer = [0; HASH_PREFIX_SIZE];
     f.read_exact(&mut buffer);
-    let digest = md5::compute(buffer);
+    let digest = md5::compute(&buffer[..]);
     format!("{:x}", digest)
 }
 
