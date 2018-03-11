@@ -146,11 +146,13 @@ pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
 }
 
 
-pub fn path_by_content<'a, I>(descriptions: I) -> HashMap<ContentDescription, PathBuf>
+pub fn path_by_content<'a, I>(descriptions: I) -> HashMap<&'a ContentDescription, &'a Path>
 where
     I: IntoIterator<Item = &'a FileDescription>,
 {
-    HashMap::from_iter(descriptions.into_iter().map(|x| (x.content, x.path)))
+    HashMap::from_iter(descriptions.into_iter().map(
+        |x| (&x.content, x.path.as_path()),
+    ))
 }
 
 
