@@ -129,6 +129,6 @@ where
                     },
                 )
             })
-            .map(|x| (x.content, x.path)),
+            .map(|x| (x.path, x)),
     )
 }
