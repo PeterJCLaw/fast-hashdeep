@@ -11,42 +11,42 @@ use walkdir::WalkDir;
 
 const HASH_PREFIX_SIZE: usize = 1024 * 1024;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ContentDescription<'a> {
     size: u64,
     hash: &'a str,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct MovedFile<'a> {
     old: &'a Path,
     new: &'a Path,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct CopiedFile<'a> {
     old: &'a Path,
     new: &'a Path,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct NewFile<'a> {
     path: &'a Path,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct ChangedFile<'a> {
     path: &'a Path,
     old_content: ContentDescription<'a>,
     new_content: ContentDescription<'a>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct MissingFile<'a> {
     path: &'a Path,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct FileDescription<'a> {
     modified: SystemTime,
     content: ContentDescription<'a>,
@@ -63,7 +63,7 @@ pub struct ChangeSummary<'a> {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum MaybeFileDescription<'a> {
     MissingFile(MissingFile<'a>),
     FileDescription(FileDescription<'a>),
