@@ -74,8 +74,8 @@ pub enum MaybeFileDescription {
 }
 
 
-pub fn walk_files(directory: &Path) -> &Iterator<Item = PathBuf> {
-    WalkDir::new(directory).into_iter().filter_map(|e| e.ok())
+pub fn walk_files(directory: &Path) -> &Iterator<Item = &Path> {
+    &WalkDir::new(directory).into_iter().filter_map(|e| e.ok()).map(|e| e.path())
 }
 
 
