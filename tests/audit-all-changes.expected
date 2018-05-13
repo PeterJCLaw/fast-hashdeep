@@ -7,4 +7,4 @@ tests/all-changes/missing.txt (from tests/all-changes/moved.txt)
 # Deleted files:
 tests/all-changes/deleted.txt
 # Added files:
-2018-01-29 20:00:00,8,0dfec2daf50518cf1264bff8efcbd3da,tests/all-changes/new.txt
+2018-01-29 20:01:02.012034,8,0dfec2daf50518cf1264bff8efcbd3da,tests/all-changes/new.txt

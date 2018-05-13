@@ -1,6 +1,6 @@
 #!/bin/sh
 
-find tests -type f -print0 | xargs -0 touch --date='2018-01-29 20:00:00.000000'
+find tests -type f -print0 | xargs -0 touch --date='2018-01-29 20:01:02.012034'
 
 DIFF=$(which colordiff || which diff)
 
