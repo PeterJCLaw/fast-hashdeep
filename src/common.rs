@@ -185,11 +185,10 @@ where
             .into_iter()
             .flat_map(|path| {
                 let reader = BufReader::new(File::open(path).unwrap());
+                let parent = path.parent().unwrap();
                 let descriptions: Vec<FileDescription> = reader
                     .lines()
-                    .map(|line| {
-                        FileDescription::parse(&line.unwrap(), path.parent().unwrap())
-                    })
+                    .map(|line| FileDescription::parse(&line.unwrap(), parent))
                     .collect();
                 descriptions
             })
