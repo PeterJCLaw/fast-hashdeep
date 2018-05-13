@@ -1,9 +1,9 @@
 # Changed files:
 tests/all-changes/changed.txt
 # Copied files:
-tests/all-changes/original.txt (from tests/all-changes/copied.txt)
+tests/all-changes/copied.txt (from tests/all-changes/original.txt)
 # Moved files:
-tests/all-changes/missing.txt (from tests/all-changes/moved.txt)
+tests/all-changes/moved.txt (from tests/all-changes/missing.txt)
 # Deleted files:
 tests/all-changes/deleted.txt
 # Added files:
