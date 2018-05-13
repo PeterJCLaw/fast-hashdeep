@@ -1,8 +1,13 @@
 use std::path::PathBuf;
 use std::vec::Vec;
 
+use common::walk_files;
+use common::describe;
+
 pub fn record(directory: PathBuf) {
-    println!("record");
+    for filepath in walk_files(directory) {
+        println!("{:?}", describe(filepath));
+    }
 }
 
 pub fn audit(directory: PathBuf, references: Vec<PathBuf>) {
