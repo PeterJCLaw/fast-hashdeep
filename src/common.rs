@@ -106,7 +106,10 @@ pub enum MaybeFileDescription {
 
 // TODO: this would ideally return `-> impl Iterator<Item = PathBuf>`, but
 // that's not stable yet.
-pub fn walk_files(directory: &Path) -> Vec<PathBuf> {
+pub fn walk_files<P>(directory: P) -> Vec<PathBuf>
+where
+    P: AsRef<Path>,
+{
     WalkDir::new(directory)
         .into_iter()
         .filter_map(|e| e.ok())
