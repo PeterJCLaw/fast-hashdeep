@@ -114,7 +114,7 @@ pub fn walk_files(directory: &Path) -> Vec<PathBuf> {
 }
 
 
-pub fn hash_file(filepath: PathBuf) -> String {
+pub fn hash_file(filepath: &PathBuf) -> String {
     let mut f = File::open(filepath).unwrap();
     let mut buffer = [0; HASH_PREFIX_SIZE];
     f.read_exact(&mut buffer);
@@ -139,7 +139,7 @@ pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
             ),
             content: ContentDescription {
                 size: metadata.len(),
-                hash: hash_file(filepath),
+                hash: hash_file(&filepath),
             },
             path: filepath,
         }),
