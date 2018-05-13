@@ -140,7 +140,7 @@ impl ChangeSummary {
 
     fn descriptions<'a, T, F>(items: Vec<T>, title: &'a str, item_formatter: F) -> String
     where
-        T: fmt::Display + Ord,
+        T: Ord,
         F: Fn(&T) -> String,
     {
         if items.len() == 0 {
