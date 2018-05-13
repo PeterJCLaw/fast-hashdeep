@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::borrow::ToOwned;
 use std::fmt;
@@ -25,19 +26,19 @@ pub struct ContentDescription {
     hash: String,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq, Ord, PartialOrd)]
 pub struct MovedFile {
     old: PathBuf,
     new: PathBuf,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq, Ord, PartialOrd)]
 pub struct CopiedFile {
     old: PathBuf,
     new: PathBuf,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq, Ord, PartialOrd)]
 pub struct NewFile {
     path: PathBuf,
 }
@@ -49,7 +50,19 @@ pub struct ChangedFile {
     new_content: ContentDescription,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+impl Ord for ChangedFile {
+    fn cmp(&self, other: &ChangedFile) -> Ordering {
+        self.path.cmp(&other.path)
+    }
+}
+
+impl PartialOrd for ChangedFile {
+    fn partial_cmp(&self, other: &ChangedFile) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(Debug, Eq, Hash, PartialEq, Ord, PartialOrd)]
 pub struct MissingFile {
     path: PathBuf,
 }
@@ -69,6 +82,18 @@ impl fmt::Display for FileDescription {
             self.content.hash,
             self.path.to_str().unwrap(),
         )
+    }
+}
+
+impl Ord for FileDescription {
+    fn cmp(&self, other: &FileDescription) -> Ordering {
+        self.path.cmp(&other.path)
+    }
+}
+
+impl PartialOrd for FileDescription {
+    fn partial_cmp(&self, other: &FileDescription) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
 
@@ -105,6 +130,34 @@ pub struct ChangeSummary {
     moved: Vec<MovedFile>,
     deleted: Vec<MissingFile>,
     added: Vec<FileDescription>,
+}
+
+impl ChangeSummary {
+    pub fn has_changes(&self) -> bool {
+        self.changed.len() > 0 || self.copied.len() > 0 || self.moved.len() > 0 ||
+            self.deleted.len() > 0 || self.added.len() > 0
+    }
+
+    fn descriptions<'a, T, F>(items: Vec<T>, title: &'a str, item_formatter: F) -> String
+    where
+        T: fmt::Display + Ord,
+        F: Fn(&T) -> String,
+    {
+        if items.len() == 0 {
+            return String::new();
+        }
+
+        let mut items_clone: Vec<&T> = items.iter().collect();
+        items_clone.sort();
+
+        let items_descriptions: Vec<String> = items_clone.into_iter().map(item_formatter).collect();
+        let items_description: String = items_descriptions.join("\n");
+        format!("# {}:\n{}", title, items_description)
+    }
+
+    pub fn describe(&self) -> String {
+        String::new() // TODO
+    }
 }
 
 
