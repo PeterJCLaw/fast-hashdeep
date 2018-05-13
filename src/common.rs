@@ -20,7 +20,7 @@ use walkdir::WalkDir;
 const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S%.6f";
 const HASH_PREFIX_SIZE: usize = 1024 * 1024;
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone)]
 pub struct ContentDescription {
     size: u64,
     hash: String,
@@ -67,7 +67,7 @@ pub struct MissingFile {
     path: PathBuf,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct FileDescription {
     modified: NaiveDateTime,
     content: ContentDescription,
@@ -248,4 +248,89 @@ where
             })
             .map(|x| (x.path.clone(), x)),
     )
+}
+
+
+pub fn describe_differences(
+    expected: &HashMap<PathBuf, FileDescription>,
+    current: &HashMap<PathBuf, MaybeFileDescription>,
+) -> ChangeSummary {
+    let mut missing: Vec<PathBuf> = Vec::new();
+    let mut actual: HashMap<&Path, FileDescription> = HashMap::new();
+    let mut unexpected: HashMap<PathBuf, FileDescription> = HashMap::new();
+
+    let mut changed: Vec<ChangedFile> = Vec::new();
+
+    for (filepath, maybe_description) in current {
+        match maybe_description {
+            &MaybeFileDescription::MissingFile(_) => missing.push(filepath.clone()),
+            &MaybeFileDescription::FileDescription(ref description) => {
+                actual.insert(filepath.as_path(), description.clone());
+                match expected.get(filepath) {
+                    None => {
+                        unexpected.insert(filepath.clone(), description.clone());
+                    }
+                    Some(expected_description) => {
+                        if expected_description != description {
+                            changed.push(ChangedFile {
+                                path: filepath.clone(),
+                                old_content: expected_description.content.clone(),
+                                new_content: description.content.clone(),
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    let path_by_expected_content = path_by_content(expected.values());
+    let current_descriptions: Vec<&FileDescription> = current
+        .values()
+        .filter_map(|x| match x {
+            &MaybeFileDescription::MissingFile(_) => None,
+            &MaybeFileDescription::FileDescription(ref description) => Some(description),
+        })
+        .collect();
+    let path_by_actual_content = path_by_content(current_descriptions);
+
+    let mut copied: Vec<CopiedFile> = Vec::new();
+    let mut moved: Vec<MovedFile> = Vec::new();
+    let mut deleted: Vec<MissingFile> = Vec::new();
+    let mut new_files: Vec<FileDescription> = Vec::new();
+
+    for missing_path in missing {
+        let expected_content = &expected.get(&missing_path).unwrap().content;
+        match path_by_actual_content.get(expected_content) {
+            Some(new_path) => {
+                moved.push(MovedFile {
+                    old: missing_path.clone(),
+                    new: new_path.to_path_buf(),
+                })
+            }
+            None => deleted.push(MissingFile { path: missing_path.clone() }),
+        }
+    }
+
+    for (filepath, description) in unexpected {
+        match path_by_expected_content.get(&description.content) {
+            Some(expected_path) => {
+                if actual.contains_key(expected_path) {
+                    copied.push(CopiedFile {
+                        old: expected_path.to_path_buf(),
+                        new: filepath.clone(),
+                    });
+                }
+            }
+            None => new_files.push(description.clone()),
+        }
+    }
+
+    ChangeSummary {
+        changed: changed,
+        copied: copied,
+        moved: moved,
+        deleted: deleted,
+        added: new_files,
+    }
 }
