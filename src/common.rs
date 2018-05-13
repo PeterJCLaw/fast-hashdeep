@@ -185,7 +185,7 @@ where
         references
             .into_iter()
             .flat_map(|path| {
-                let reader = BufReader::new(File::open(path).unwrap());
+                let reader = BufReader::new(File::open(path.as_ref()).unwrap());
                 let parent = path.as_ref().parent().unwrap();
                 let descriptions: Vec<FileDescription> = reader
                     .lines()
