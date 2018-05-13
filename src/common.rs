@@ -138,7 +138,7 @@ impl ChangeSummary {
             self.deleted.len() > 0 || self.added.len() > 0
     }
 
-    fn descriptions<'a, T, F>(items: Vec<T>, title: &'a str, item_formatter: F) -> String
+    fn descriptions<'a, T, F>(items: &Vec<T>, title: &'a str, item_formatter: F) -> String
     where
         T: Ord,
         F: Fn(&T) -> String,
@@ -156,7 +156,26 @@ impl ChangeSummary {
     }
 
     pub fn describe(&self) -> String {
-        String::new() // TODO
+        let changed_descriptions =
+            ChangeSummary::descriptions(&self.changed, "Changed files", |x| format!("{:?}", x.path));
+        let copied_descriptions = ChangeSummary::descriptions(&self.copied, "Copied files", |x| {
+            format!("{:?} (from {:?})", x.new, x.old)
+        });
+        let moved_descriptions = ChangeSummary::descriptions(&self.moved, "Moved files", |x| {
+            format!("{:?} (from {:?})", x.new, x.old)
+        });
+        let deleted_descriptions =
+            ChangeSummary::descriptions(&self.deleted, "Deleted files", |x| format!("{:?}", x.path));
+        let added_descriptions =
+            ChangeSummary::descriptions(&self.added, "Added files", |x| format!("{:?}", x));
+
+        format!("{}\n{}\n{}\n{}\n{}",
+            changed_descriptions,
+            copied_descriptions,
+            moved_descriptions,
+            deleted_descriptions,
+            added_descriptions,
+        )
     }
 }
 
