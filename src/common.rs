@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::borrow::ToOwned;
+use std::fmt;
 use std::fs::File;
 use std::io::Read;
 use std::io::BufReader;
@@ -60,6 +61,16 @@ pub struct FileDescription {
     path: PathBuf,
 }
 
+impl fmt::Display for FileDescription {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{},{},{},{}",
+            self.modified.format(DATE_FORMAT),
+            self.content.size,
+            self.content.hash,
+            self.path.to_str().unwrap(),
+        )
+    }
+}
 
 impl FileDescription {
     pub fn parse(string: &str, relative_to: &Path) -> Self {
