@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 use std::vec::Vec;
 
-use common::walk_files;
 use common::describe;
+use common::walk_files;
 
 pub fn record(directory: PathBuf) {
     for filepath in walk_files(directory) {
