@@ -104,7 +104,8 @@ pub enum MaybeFileDescription {
 }
 
 
-// TODO: see if we can introduce a lifetime to allow this to be an iterator?
+// TODO: this would ideally return `-> impl Iterator<Item = PathBuf>`, but
+// that's not stable yet.
 pub fn walk_files(directory: &Path) -> Vec<PathBuf> {
     WalkDir::new(directory)
         .into_iter()
