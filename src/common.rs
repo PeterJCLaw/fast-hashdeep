@@ -167,7 +167,7 @@ where
             .flat_map(|path| {
                 let reader = BufReader::new(File::open(path).unwrap());
                 reader.lines().map(|line| {
-                    FileDescription::parse(line.unwrap().as_str(), path.parent().unwrap())
+                    FileDescription::parse(&line.unwrap(), path.parent().unwrap())
                 })
             })
             .map(|x| (x.path.clone(), x)),
