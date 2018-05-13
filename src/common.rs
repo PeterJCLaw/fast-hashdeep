@@ -165,11 +165,10 @@ where
         references
             .into_iter()
             .flat_map(|path| {
-                BufReader::new(File::open(path).unwrap()).lines().map(
-                    |line| {
-                        FileDescription::parse(line.unwrap().as_str(), path.parent().unwrap())
-                    },
-                )
+                let reader = BufReader::new(File::open(path).unwrap());
+                reader.lines().map(|line| {
+                    FileDescription::parse(line.unwrap().as_str(), path.parent().unwrap())
+                })
             })
             .map(|x| (x.path.clone(), x)),
     )
