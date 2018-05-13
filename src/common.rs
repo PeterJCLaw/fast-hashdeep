@@ -15,7 +15,7 @@ use chrono::naive::NaiveDateTime;
 use md5;
 use walkdir::WalkDir;
 
-const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
+const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S%.6f";
 const HASH_PREFIX_SIZE: usize = 1024 * 1024;
 
 #[derive(Debug, Eq, Hash, PartialEq)]
