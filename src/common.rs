@@ -176,16 +176,17 @@ where
 }
 
 
-pub fn load_descriptions<'a, I>(references: I) -> HashMap<PathBuf, FileDescription>
+pub fn load_descriptions<'a, I, P>(references: I) -> HashMap<PathBuf, FileDescription>
 where
-    I: IntoIterator<Item = &'a PathBuf>,
+    I: IntoIterator<Item = P>,
+    P: AsRef<Path>,
 {
     HashMap::from_iter(
         references
             .into_iter()
             .flat_map(|path| {
                 let reader = BufReader::new(File::open(path).unwrap());
-                let parent = path.parent().unwrap();
+                let parent = path.as_ref().parent().unwrap();
                 let descriptions: Vec<FileDescription> = reader
                     .lines()
                     .map(|line| FileDescription::parse(&line.unwrap(), parent))
