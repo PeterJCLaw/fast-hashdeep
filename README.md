@@ -11,3 +11,19 @@ diversity is large.
 
 The original use-case was for coping with directories of video files which might
 have been moved or renamed, but which were unlikely to actually _change_.
+
+## Testing
+
+Very minimal tests exist via the `./runtests` script. This operates on some
+dummy data files and directories within `tests/` and can be configured to use
+either the Python or Rust implementations.
+
+Python:
+```
+./runtests ./fast-hashdeep.py
+```
+
+Rust:
+```
+./runtests cargo run --release --
+```
