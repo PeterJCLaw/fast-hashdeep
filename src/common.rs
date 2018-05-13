@@ -171,6 +171,6 @@ where
                     },
                 )
             })
-            .map(|x| (x.path, x)),
+            .map(|x| (x.path.clone(), x)),
     )
 }
