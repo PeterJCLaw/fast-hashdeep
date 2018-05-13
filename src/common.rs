@@ -104,11 +104,13 @@ pub enum MaybeFileDescription {
 }
 
 
-pub fn walk_files(directory: &Path) -> &Iterator<Item = &Path> {
-    &WalkDir::new(directory)
+// TODO: see if we can introduce a lifetime to allow this to be an iterator?
+pub fn walk_files(directory: &Path) -> Vec<PathBuf> {
+    WalkDir::new(directory)
         .into_iter()
         .filter_map(|e| e.ok())
-        .map(|e| e.path())
+        .map(|e| e.path().to_path_buf())
+        .collect()
 }
 
 
