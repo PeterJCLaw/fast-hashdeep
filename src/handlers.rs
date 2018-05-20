@@ -75,7 +75,7 @@ pub fn find_duplicates(references: Vec<PathBuf>) {
 
     let duplicates: Vec<(ContentDescription, Vec<PathBuf>)> = all_by_content
         .into_iter()
-        .filter(|&(_, ref v)| !v.is_empty())
+        .filter(|&(_, ref v)| v.len() > 1)
         .collect();
 
     if duplicates.is_empty() {
