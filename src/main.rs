@@ -2,6 +2,7 @@
 extern crate structopt;
 
 extern crate chrono;
+extern crate itertools;
 extern crate md5;
 extern crate walkdir;
 

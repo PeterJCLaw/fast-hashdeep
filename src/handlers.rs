@@ -4,6 +4,9 @@ use std::iter::Iterator;
 use std::path::PathBuf;
 use std::vec::Vec;
 
+use itertools::Itertools;
+
+use common::ContentDescription;
 use common::describe;
 use common::describe_differences;
 use common::load_descriptions;
@@ -63,5 +66,32 @@ pub fn compare(baseline: PathBuf, target: PathBuf) {
 }
 
 pub fn find_duplicates(references: Vec<PathBuf>) {
-    println!("find_duplicates");
+    let all_by_content = load_descriptions(references)
+        .into_iter()
+        .map(|(path, file_description)| {
+            (file_description.content_ref().clone(), path)
+        })
+        .into_group_map();
+
+    let duplicates: Vec<(ContentDescription, Vec<PathBuf>)> = all_by_content
+        .into_iter()
+        .filter(|&(_, ref v)| !v.is_empty())
+        .collect();
+
+    if duplicates.is_empty() {
+        println!("No duplicates");
+        return;
+    }
+
+    for (content, mut paths) in duplicates {
+        println!(
+            "Duplicate content {} (size {})",
+            content.hash(),
+            content.size(),
+        );
+        paths.sort();
+        for path in paths {
+            println!(" - {}", path.display());
+        }
+    }
 }

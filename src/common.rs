@@ -27,6 +27,15 @@ pub struct ContentDescription {
     hash: String,
 }
 
+impl ContentDescription {
+    pub fn size(&self) -> u64 {
+        self.size
+    }
+    pub fn hash(&self) -> &str {
+        &self.hash
+    }
+}
+
 #[derive(Debug, Eq, Hash, PartialEq, Ord, PartialOrd)]
 pub struct MovedFile {
     old: PathBuf,
@@ -82,6 +91,12 @@ pub struct FileDescription {
     modified: NaiveDateTime,
     content: ContentDescription,
     path: PathBuf,
+}
+
+impl FileDescription {
+    pub fn content_ref(&self) -> &ContentDescription {
+        &self.content
+    }
 }
 
 impl fmt::Display for FileDescription {
