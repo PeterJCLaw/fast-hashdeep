@@ -8,6 +8,7 @@ use common::describe;
 use common::describe_differences;
 use common::load_descriptions;
 use common::MaybeFileDescription;
+use common::MissingFile;
 use common::walk_files;
 
 pub fn record(directory: PathBuf) {
@@ -42,7 +43,23 @@ pub fn audit(directory: PathBuf, references: Vec<PathBuf>) {
 }
 
 pub fn compare(baseline: PathBuf, target: PathBuf) {
-    println!("compare");
+    let baseline_descriptions = load_descriptions(vec![baseline]);
+    let mut target_descriptions: HashMap<PathBuf, MaybeFileDescription> =
+        HashMap::from_iter(load_descriptions(vec![target]).into_iter().map(|(k, v)| {
+            (k, MaybeFileDescription::FileDescription(v))
+        }));
+
+    for filepath in baseline_descriptions.keys() {
+        target_descriptions.entry(filepath.clone()).or_insert(
+            MaybeFileDescription::MissingFile(MissingFile::new(filepath)),
+        );
+    }
+
+    let change_summary = describe_differences(&baseline_descriptions, &target_descriptions);
+
+    if change_summary.has_changes() {
+        println!("{}", change_summary.describe())
+    }
 }
 
 pub fn find_duplicates(references: Vec<PathBuf>) {

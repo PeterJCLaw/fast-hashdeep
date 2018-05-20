@@ -68,6 +68,15 @@ pub struct MissingFile {
     path: PathBuf,
 }
 
+impl MissingFile {
+    pub fn new<P>(filepath: P) -> MissingFile
+    where
+        P: AsRef<Path>,
+    {
+        MissingFile { path: filepath.as_ref().to_path_buf() }
+    }
+}
+
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct FileDescription {
     modified: NaiveDateTime,
