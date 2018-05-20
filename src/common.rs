@@ -215,8 +215,8 @@ where
 {
     let mut f = File::open(filepath).unwrap();
     let mut buffer = [0; HASH_PREFIX_SIZE];
-    f.read(&mut buffer).unwrap();
-    let digest = md5::compute(&buffer[..]);
+    let read_size: usize = f.read(&mut buffer).unwrap();
+    let digest = md5::compute(&buffer[..read_size]);
     format!("{:x}", digest)
 }
 
