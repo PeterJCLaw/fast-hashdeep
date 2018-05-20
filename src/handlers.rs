@@ -30,7 +30,7 @@ pub fn audit(directory: PathBuf, references: Vec<PathBuf>) {
     }));
 
     for filepath in walk_files(directory) {
-        let entry = current.entry(filepath.clone()).or_insert_with(
+        current.entry(filepath.clone()).or_insert_with(
             || describe(filepath),
         );
     }
