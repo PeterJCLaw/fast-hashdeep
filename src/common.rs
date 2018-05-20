@@ -113,7 +113,8 @@ impl FileDescription {
             })
             .collect();
         FileDescription {
-            modified: NaiveDateTime::parse_from_str(parts[0], DATE_FORMAT).unwrap(),
+            modified: NaiveDateTime::parse_from_str(parts[0], DATE_FORMAT)
+                .expect(&format!("Bad datetime '{}'", parts[0])),
             content: ContentDescription {
                 size: parts[1].parse().unwrap(),
                 hash: parts[2].to_owned(),
