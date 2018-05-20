@@ -156,22 +156,20 @@ impl ChangeSummary {
     }
 
     pub fn describe(&self) -> String {
-        let changed_descriptions = ChangeSummary::descriptions(
-            &self.changed,
-            "Changed files",
-            |x| format!("{}", x.path.display()),
-        );
+        let changed_descriptions =
+            ChangeSummary::descriptions(&self.changed, "Changed files", |x| {
+                format!("{}", x.path.display())
+            });
         let copied_descriptions = ChangeSummary::descriptions(&self.copied, "Copied files", |x| {
             format!("{} (from {})", x.new.display(), x.old.display())
         });
         let moved_descriptions = ChangeSummary::descriptions(&self.moved, "Moved files", |x| {
             format!("{} (from {})", x.new.display(), x.old.display())
         });
-        let deleted_descriptions = ChangeSummary::descriptions(
-            &self.deleted,
-            "Deleted files",
-            |x| format!("{}", x.path.display()),
-        );
+        let deleted_descriptions =
+            ChangeSummary::descriptions(&self.deleted, "Deleted files", |x| {
+                format!("{}", x.path.display())
+            });
         let added_descriptions =
             ChangeSummary::descriptions(&self.added, "Added files", |x| format!("{}", x));
 
@@ -181,7 +179,9 @@ impl ChangeSummary {
             moved_descriptions,
             deleted_descriptions,
             added_descriptions,
-        ].into_iter().filter_map(|x| x).collect();
+        ].into_iter()
+            .filter_map(|x| x)
+            .collect();
         descriptions.join("\n")
     }
 }
