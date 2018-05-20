@@ -159,21 +159,21 @@ impl ChangeSummary {
         let changed_descriptions = ChangeSummary::descriptions(
             &self.changed,
             "Changed files",
-            |x| format!("{:?}", x.path),
+            |x| format!("{}", x.path.display()),
         );
         let copied_descriptions = ChangeSummary::descriptions(&self.copied, "Copied files", |x| {
-            format!("{:?} (from {:?})", x.new, x.old)
+            format!("{} (from {})", x.new.display(), x.old.display())
         });
         let moved_descriptions = ChangeSummary::descriptions(&self.moved, "Moved files", |x| {
-            format!("{:?} (from {:?})", x.new, x.old)
+            format!("{} (from {})", x.new.display(), x.old.display())
         });
         let deleted_descriptions = ChangeSummary::descriptions(
             &self.deleted,
             "Deleted files",
-            |x| format!("{:?}", x.path),
+            |x| format!("{}", x.path.display()),
         );
         let added_descriptions =
-            ChangeSummary::descriptions(&self.added, "Added files", |x| format!("{:?}", x));
+            ChangeSummary::descriptions(&self.added, "Added files", |x| format!("{}", x));
 
         format!("{}\n{}\n{}\n{}\n{}",
             changed_descriptions,
