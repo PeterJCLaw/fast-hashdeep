@@ -283,20 +283,20 @@ pub fn describe_differences(
     expected: &HashMap<PathBuf, FileDescription>,
     current: &HashMap<PathBuf, MaybeFileDescription>,
 ) -> ChangeSummary {
-    let mut missing: Vec<PathBuf> = Vec::new();
-    let mut actual: HashMap<&Path, FileDescription> = HashMap::new();
-    let mut unexpected: HashMap<PathBuf, FileDescription> = HashMap::new();
+    let mut missing: Vec<&Path> = Vec::new();
+    let mut actual: HashMap<&Path, &FileDescription> = HashMap::new();
+    let mut unexpected: HashMap<&Path, &FileDescription> = HashMap::new();
 
     let mut changed: Vec<ChangedFile> = Vec::new();
 
     for (filepath, maybe_description) in current {
         match maybe_description {
-            &MaybeFileDescription::MissingFile(_) => missing.push(filepath.clone()),
+            &MaybeFileDescription::MissingFile(_) => missing.push(filepath.as_path()),
             &MaybeFileDescription::FileDescription(ref description) => {
-                actual.insert(filepath.as_path(), description.clone());
+                actual.insert(filepath.as_path(), &description);
                 match expected.get(filepath) {
                     None => {
-                        unexpected.insert(filepath.clone(), description.clone());
+                        unexpected.insert(filepath.as_path(), &description);
                     }
                     Some(expected_description) => {
                         if expected_description != description {
@@ -328,15 +328,16 @@ pub fn describe_differences(
     let mut new_files: Vec<FileDescription> = Vec::new();
 
     for missing_path in missing {
-        let expected_content = &expected.get(&missing_path).unwrap().content;
+        let missing_path_buf = missing_path.to_path_buf();
+        let expected_content = &expected.get(&missing_path_buf).unwrap().content;
         match path_by_actual_content.get(expected_content) {
             Some(new_path) => {
                 moved.push(MovedFile {
-                    old: missing_path.clone(),
+                    old: missing_path_buf,
                     new: new_path.to_path_buf(),
                 })
             }
-            None => deleted.push(MissingFile { path: missing_path.clone() }),
+            None => deleted.push(MissingFile { path: missing_path_buf }),
         }
     }
 
@@ -346,7 +347,7 @@ pub fn describe_differences(
                 if actual.contains_key(expected_path) {
                     copied.push(CopiedFile {
                         old: expected_path.to_path_buf(),
-                        new: filepath.clone(),
+                        new: filepath.to_path_buf(),
                     });
                 }
             }
