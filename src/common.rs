@@ -138,13 +138,13 @@ impl ChangeSummary {
             self.deleted.len() > 0 || self.added.len() > 0
     }
 
-    fn descriptions<'a, T, F>(items: &Vec<T>, title: &'a str, item_formatter: F) -> String
+    fn descriptions<'a, T, F>(items: &Vec<T>, title: &'a str, item_formatter: F) -> Option<String>
     where
         T: Ord,
         F: Fn(&T) -> String,
     {
         if items.len() == 0 {
-            return String::new();
+            return None;
         }
 
         let mut items_clone: Vec<&T> = items.iter().collect();
@@ -152,7 +152,7 @@ impl ChangeSummary {
 
         let items_descriptions: Vec<String> = items_clone.into_iter().map(item_formatter).collect();
         let items_description: String = items_descriptions.join("\n");
-        format!("# {}:\n{}", title, items_description)
+        Some(format!("# {}:\n{}", title, items_description))
     }
 
     pub fn describe(&self) -> String {
@@ -175,13 +175,14 @@ impl ChangeSummary {
         let added_descriptions =
             ChangeSummary::descriptions(&self.added, "Added files", |x| format!("{}", x));
 
-        format!("{}\n{}\n{}\n{}\n{}",
+        let descriptions: Vec<String> = vec![
             changed_descriptions,
             copied_descriptions,
             moved_descriptions,
             deleted_descriptions,
             added_descriptions,
-        )
+        ].into_iter().filter_map(|x| x).collect();
+        descriptions.join("\n")
     }
 }
 
