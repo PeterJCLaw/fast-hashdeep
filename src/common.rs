@@ -156,16 +156,22 @@ impl ChangeSummary {
     }
 
     pub fn describe(&self) -> String {
-        let changed_descriptions =
-            ChangeSummary::descriptions(&self.changed, "Changed files", |x| format!("{:?}", x.path));
+        let changed_descriptions = ChangeSummary::descriptions(
+            &self.changed,
+            "Changed files",
+            |x| format!("{:?}", x.path),
+        );
         let copied_descriptions = ChangeSummary::descriptions(&self.copied, "Copied files", |x| {
             format!("{:?} (from {:?})", x.new, x.old)
         });
         let moved_descriptions = ChangeSummary::descriptions(&self.moved, "Moved files", |x| {
             format!("{:?} (from {:?})", x.new, x.old)
         });
-        let deleted_descriptions =
-            ChangeSummary::descriptions(&self.deleted, "Deleted files", |x| format!("{:?}", x.path));
+        let deleted_descriptions = ChangeSummary::descriptions(
+            &self.deleted,
+            "Deleted files",
+            |x| format!("{:?}", x.path),
+        );
         let added_descriptions =
             ChangeSummary::descriptions(&self.added, "Added files", |x| format!("{:?}", x));
 
