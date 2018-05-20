@@ -114,8 +114,8 @@ class ChangeSummary(_ChangeSummary):
 
         return "\n".join(x for x in (
             descriptions(self.changed, "Changed files", "{0.path}"),
-            descriptions(self.copied, "Copied files", "{0.old} (from {0.new})"),
-            descriptions(self.moved, "Moved files", "{0.old} (from {0.new})"),
+            descriptions(self.copied, "Copied files", "{0.new} (from {0.old})"),
+            descriptions(self.moved, "Moved files", "{0.new} (from {0.old})"),
             descriptions(self.deleted, "Deleted files", "{0.path}"),
             descriptions(self.added, "Added files", "{0}"),
         ) if x)
@@ -295,7 +295,8 @@ def find_duplicates(references: List[TextIO]) -> None:
 
     for content, paths in duplicates.items():
         print(f"Duplicate content {content.hash} (size {content.size})")
-        for path in sorted(paths):
+        paths.sort()
+        for path in paths:
             print(f" - {path}")
 
 
