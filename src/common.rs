@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::borrow::ToOwned;
 use std::fmt;
 use std::fs::File;
+use std::fs::Metadata;
 use std::io::Read;
 use std::io::BufReader;
 use std::io::BufRead;
@@ -222,19 +223,20 @@ where
 
 
 pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
+    fn from_metadata(metadata: &Metadata) -> NaiveDateTime {
+        let timestamp = metadata
+            .modified()
+            .unwrap()
+            .duration_since(UNIX_EPOCH)
+            .unwrap();
+        NaiveDateTime::from_timestamp(timestamp.as_secs() as i64, timestamp.subsec_nanos())
+    }
+
     let metadata_result = filepath.metadata();
     match metadata_result {
         Err(_) => MaybeFileDescription::MissingFile(MissingFile { path: filepath }),
         Ok(metadata) => MaybeFileDescription::FileDescription(FileDescription {
-            modified: NaiveDateTime::from_timestamp(
-                metadata
-                    .modified()
-                    .unwrap()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs() as i64,
-                0,
-            ),
+            modified: from_metadata(&metadata),
             content: ContentDescription {
                 size: metadata.len(),
                 hash: hash_file(&filepath),
