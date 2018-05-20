@@ -295,7 +295,8 @@ def find_duplicates(references: List[TextIO]) -> None:
 
     for content, paths in duplicates.items():
         print(f"Duplicate content {content.hash} (size {content.size})")
-        for path in sorted(paths):
+        paths.sort()
+        for path in paths:
             print(f" - {path}")
 
 
