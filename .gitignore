@@ -1,4 +1,5 @@
 /.mypy_cache
+/.pyre
 /.vscode
 /tests/*.output
 /target/
