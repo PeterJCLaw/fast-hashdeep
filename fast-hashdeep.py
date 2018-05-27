@@ -5,6 +5,8 @@ import hashlib
 import os.path
 import pathlib
 from typing import (
+    TYPE_CHECKING,
+    Callable,
     Dict,
     Iterable,
     Iterator,
@@ -17,6 +19,10 @@ from typing import (
 
 import click
 import dateutil.parser
+
+if TYPE_CHECKING:
+    from hashlib import _Hash  # noqa: F401
+
 
 HASH_PREFIX_SIZE = 1024 * 1024
 
@@ -131,7 +137,7 @@ def walk_files(directory: pathlib.Path) -> Iterator[pathlib.Path]:
             yield rootpath / filename
 
 
-def hash_file(filepath: pathlib.Path, hash=hashlib.md5) -> str:
+def hash_file(filepath: pathlib.Path, hash: Callable[[bytes], '_Hash']=hashlib.md5) -> str:
     with filepath.open(mode='rb') as f:
         return hash(f.read(HASH_PREFIX_SIZE)).hexdigest()
 
