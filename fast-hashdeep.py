@@ -14,6 +14,7 @@ from typing import (
     Mapping,
     NamedTuple,
     TextIO,
+    TypeVar,
     Union,
 )
 
@@ -22,6 +23,9 @@ import dateutil.parser
 
 if TYPE_CHECKING:
     from hashlib import _Hash  # noqa: F401
+
+
+T = TypeVar('T')
 
 
 HASH_PREFIX_SIZE = 1024 * 1024
@@ -108,7 +112,7 @@ class ChangeSummary(_ChangeSummary):
         return any(x for x in self)
 
     def describe(self) -> str:
-        def descriptions(items, title, template):
+        def descriptions(items: List[T], title: str, template: str) -> str:
             if not items:
                 return ''
 
@@ -227,7 +231,7 @@ def describe_differences(
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
