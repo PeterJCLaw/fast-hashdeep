@@ -13,6 +13,7 @@ from typing import (
     List,
     Mapping,
     NamedTuple,
+    Optional,
     TextIO,
     TypeVar,
     Union,
@@ -112,9 +113,9 @@ class ChangeSummary(_ChangeSummary):
         return any(x for x in self)
 
     def describe(self) -> str:
-        def descriptions(items: List[T], title: str, template: str) -> str:
+        def descriptions(items: List[T], title: str, template: str) -> Optional[str]:
             if not items:
-                return ''
+                return None
 
             items_description = "\n".join(
                 template.format(x)
