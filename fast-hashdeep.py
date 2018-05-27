@@ -12,7 +12,7 @@ from typing import (
     Mapping,
     NamedTuple,
     TextIO,
-    Union
+    Union,
 )
 
 import click
