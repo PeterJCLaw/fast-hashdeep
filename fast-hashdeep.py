@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 T = TypeVar('T')
 
 
-HASH_PREFIX_SIZE = 1024 * 1024
+HASH_PREFIX_SIZE: int = 1024 * 1024
 
 
 class ContentDescription(NamedTuple):
