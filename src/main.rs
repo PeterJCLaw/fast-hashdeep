@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate structopt;
 
 extern crate chrono;
@@ -12,7 +11,7 @@ use structopt::StructOpt;
 
 mod common;
 mod handlers;
-use handlers::{record, audit, compare, find_duplicates};
+use handlers::{audit, compare, find_duplicates, record};
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "fash-hashdeep")]
