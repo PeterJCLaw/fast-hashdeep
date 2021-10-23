@@ -6,6 +6,7 @@ import os.path
 import pathlib
 from typing import (
     TYPE_CHECKING,
+    Any,
     Callable,
     Dict,
     Iterable,
@@ -14,6 +15,7 @@ from typing import (
     Mapping,
     NamedTuple,
     Optional,
+    Protocol,
     TextIO,
     TypeVar,
     Union,
@@ -28,6 +30,12 @@ if TYPE_CHECKING:
 
 T = TypeVar('T')
 
+
+class SupportsLessThan(Protocol):
+    def __lt__(self, __other: Any) -> bool: ...
+
+
+SupportsLessThanT = TypeVar("SupportsLessThanT", bound=SupportsLessThan)
 
 HASH_PREFIX_SIZE: int = 1024 * 1024
 
@@ -113,7 +121,7 @@ class ChangeSummary(_ChangeSummary):
         return any(x for x in self)
 
     def describe(self) -> str:
-        def descriptions(items: List[T], title: str, template: str) -> Optional[str]:
+        def descriptions(items: List[SupportsLessThanT], title: str, template: str) -> Optional[str]:
             if not items:
                 return None
 
