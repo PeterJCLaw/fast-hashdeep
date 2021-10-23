@@ -15,11 +15,11 @@ from typing import (
     Mapping,
     NamedTuple,
     Optional,
-    Protocol,
     TextIO,
     TypeVar,
     Union,
 )
+from typing_extensions import Protocol
 
 import click
 import dateutil.parser
