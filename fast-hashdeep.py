@@ -186,11 +186,11 @@ def describe_differences(
     expected: Mapping[pathlib.Path, FileDescription],
     current: Mapping[pathlib.Path, MaybeFileDescription],
 ) -> ChangeSummary:
-    missing = []  # type: List[pathlib.Path]
-    actual = {}  # type: Dict[pathlib.Path, FileDescription]
-    unexpected = {}  # type: Dict[pathlib.Path, FileDescription]
+    missing: List[pathlib.Path] = []
+    actual: Dict[pathlib.Path, FileDescription] = {}
+    unexpected: Dict[pathlib.Path, FileDescription] = {}
 
-    changed = []  # type: List[ChangedFile]
+    changed: List[ChangedFile] = []
 
     for filepath, description in current.items():
         if isinstance(description, MissingFile):
@@ -212,10 +212,10 @@ def describe_differences(
         x for x in current.values() if isinstance(x, FileDescription)
     )
 
-    copied = []  # type: List[CopiedFile]
-    moved = []  # type: List[MovedFile]
-    deleted = []  # type: List[MissingFile]
-    new_files = []  # type: List[FileDescription]
+    copied: List[CopiedFile] = []
+    moved: List[MovedFile] = []
+    deleted: List[MissingFile] = []
+    new_files: List[FileDescription] = []
 
     for missing_path in missing:
         expected_content = expected[missing_path].content
@@ -288,9 +288,9 @@ def compare(baseline: TextIO, target: TextIO) -> None:
     """Compare records in the given files."""
 
     baseline_descriptions = load_descriptions([baseline])
-    target_descriptions = dict(
+    target_descriptions: Dict[pathlib.Path, MaybeFileDescription] = dict(
         load_descriptions([target]),
-    )  # type: Dict[pathlib.Path, MaybeFileDescription]
+    )
 
     for filepath in baseline_descriptions.keys():
         if filepath not in target_descriptions:
@@ -310,7 +310,7 @@ def compare(baseline: TextIO, target: TextIO) -> None:
 def find_duplicates(references: List[TextIO]) -> None:
     """Search for duplicates within the given files."""
 
-    all_by_content = {}  # type: Dict[ContentDescription, List[pathlib.Path]]
+    all_by_content: Dict[ContentDescription, List[pathlib.Path]] = {}
 
     descriptions = load_descriptions(references)
     for path, description in descriptions.items():
