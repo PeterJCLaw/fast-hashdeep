@@ -150,7 +150,7 @@ def walk_files(directory: pathlib.Path) -> Iterator[pathlib.Path]:
             yield rootpath / filename
 
 
-def hash_file(filepath: pathlib.Path, hash: Callable[[bytes], '_Hash']=hashlib.md5) -> str:
+def hash_file(filepath: pathlib.Path, hash: Callable[[bytes], '_Hash'] = hashlib.md5) -> str:
     with filepath.open(mode='rb') as f:
         return hash(f.read(HASH_PREFIX_SIZE)).hexdigest()
 
