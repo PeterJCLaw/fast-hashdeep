@@ -247,7 +247,12 @@ def cli() -> None:
 @cli.command()
 @click.argument('directory', type=click.Path(exists=True))
 def record(directory: str) -> None:
-    """Record the current state of the directory"""
+    """
+    Record the current state of the directory.
+
+    This captures the current state of the directory and prints it in a format
+    which can later be used as the input for other commands.
+    """
     for filepath in walk_files(pathlib.Path(directory)):
         print(describe(filepath))
 
@@ -256,7 +261,12 @@ def record(directory: str) -> None:
 @click.argument('directory', type=click.Path(exists=True))
 @click.argument('references', required=True, nargs=-1, type=click.File('rt'))
 def audit(directory: str, references: Iterable[TextIO]) -> None:
-    """Audit records in the given files"""
+    """
+    Audit records in the given files.
+
+    This captures the current state of the directory and the compares it to the
+    state expected by the given references.
+    """
 
     expected = load_descriptions(references)
     current = {p: describe(p) for p in expected.keys()}
@@ -275,7 +285,7 @@ def audit(directory: str, references: Iterable[TextIO]) -> None:
 @click.argument('baseline', type=click.File('rt'))
 @click.argument('target', type=click.File('rt'))
 def compare(baseline: TextIO, target: TextIO) -> None:
-    """Compare records in the given files"""
+    """Compare records in the given files."""
 
     baseline_descriptions = load_descriptions([baseline])
     target_descriptions = dict(
@@ -298,7 +308,7 @@ def compare(baseline: TextIO, target: TextIO) -> None:
 @cli.command('find-duplicates')
 @click.argument('references', required=True, nargs=-1, type=click.File('rt'))
 def find_duplicates(references: List[TextIO]) -> None:
-    """Search for duplicates within the given files"""
+    """Search for duplicates within the given files."""
 
     all_by_content = {}  # type: Dict[ContentDescription, List[pathlib.Path]]
 
