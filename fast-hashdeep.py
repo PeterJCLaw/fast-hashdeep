@@ -175,9 +175,12 @@ def path_by_content(descriptions: Iterable[FileDescription]) -> Dict[ContentDesc
 
 def load_descriptions(references: Iterable[TextIO]) -> Dict[pathlib.Path, FileDescription]:
     descriptions = [
-        FileDescription.parse(l, relative_to=pathlib.Path(f.name).parent)
-        for f in references
-        for l in f
+        FileDescription.parse(
+            line,
+            relative_to=pathlib.Path(reference.name).parent,
+        )
+        for reference in references
+        for line in reference
     ]
     return {x.path: x for x in descriptions}
 
