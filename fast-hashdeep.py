@@ -201,7 +201,7 @@ def describe_differences(
 
     path_by_expected_content = path_by_content(expected.values())
     path_by_actual_content = path_by_content(
-        x for x in current.values() if isinstance(x, FileDescription),
+        x for x in current.values() if isinstance(x, FileDescription)
     )
 
     copied = []  # type: List[CopiedFile]
