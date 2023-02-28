@@ -2,7 +2,7 @@
 
 find tests -type f -print0 | xargs -0 touch --date='2018-01-29 20:01:02.012034'
 
-if [ -z "$@" ]
+if [ "$#" -eq 0 ]
 then
     IMPLEMENTATION=./fast-hashdeep.py
 else
