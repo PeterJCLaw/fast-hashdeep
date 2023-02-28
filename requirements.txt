@@ -1,3 +1,2 @@
 click
 python-dateutil
-typing-extensions
