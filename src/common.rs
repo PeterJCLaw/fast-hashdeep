@@ -257,7 +257,8 @@ pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
             .unwrap()
             .duration_since(UNIX_EPOCH)
             .unwrap();
-        NaiveDateTime::from_timestamp(timestamp.as_secs() as i64, timestamp.subsec_nanos())
+        NaiveDateTime::from_timestamp_opt(timestamp.as_secs() as i64, timestamp.subsec_nanos())
+            .unwrap()
     }
 
     let metadata_result = filepath.metadata();
