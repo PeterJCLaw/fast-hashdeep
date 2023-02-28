@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import datetime
 import hashlib
 import os.path
@@ -8,13 +10,10 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
     Iterable,
     Iterator,
-    List,
     Mapping,
     NamedTuple,
-    Optional,
     Protocol,
     TextIO,
     TypeVar,
@@ -82,7 +81,7 @@ class FileDescription(NamedTuple):
         size: int,
         hash: str,
         path: pathlib.Path,
-    ) -> 'FileDescription':
+    ) -> FileDescription:
         return cls(
             modified=modified,
             content=ContentDescription(size=size, hash=hash),
@@ -90,7 +89,7 @@ class FileDescription(NamedTuple):
         )
 
     @classmethod
-    def parse(cls, string: str, relative_to: pathlib.Path) -> 'FileDescription':
+    def parse(cls, string: str, relative_to: pathlib.Path) -> FileDescription:
         modified, size, hash_, path = string.strip().split(',', maxsplit=3)
         return cls.create(
             modified=dateutil.parser.parse(modified),
@@ -109,11 +108,11 @@ class FileDescription(NamedTuple):
 
 
 class _ChangeSummary(NamedTuple):
-    changed: List[ChangedFile]
-    copied: List[CopiedFile]
-    moved: List[MovedFile]
-    deleted: List[MissingFile]
-    added: List[FileDescription]
+    changed: list[ChangedFile]
+    copied: list[CopiedFile]
+    moved: list[MovedFile]
+    deleted: list[MissingFile]
+    added: list[FileDescription]
 
 
 class ChangeSummary(_ChangeSummary):
@@ -121,7 +120,7 @@ class ChangeSummary(_ChangeSummary):
         return any(x for x in self)
 
     def describe(self) -> str:
-        def descriptions(items: List[SupportsLessThanT], title: str, template: str) -> Optional[str]:
+        def descriptions(items: list[SupportsLessThanT], title: str, template: str) -> str | None:
             if not items:
                 return None
 
@@ -150,7 +149,7 @@ def walk_files(directory: pathlib.Path) -> Iterator[pathlib.Path]:
             yield rootpath / filename
 
 
-def hash_file(filepath: pathlib.Path, hash: Callable[[bytes], '_Hash'] = hashlib.md5) -> str:
+def hash_file(filepath: pathlib.Path, hash: Callable[[bytes], _Hash] = hashlib.md5) -> str:
     with filepath.open(mode='rb') as f:
         return hash(f.read(HASH_PREFIX_SIZE)).hexdigest()
 
@@ -169,11 +168,11 @@ def describe(filepath: pathlib.Path) -> MaybeFileDescription:
         )
 
 
-def path_by_content(descriptions: Iterable[FileDescription]) -> Dict[ContentDescription, pathlib.Path]:
+def path_by_content(descriptions: Iterable[FileDescription]) -> dict[ContentDescription, pathlib.Path]:
     return {x.content: x.path for x in descriptions}
 
 
-def load_descriptions(references: Iterable[TextIO]) -> Dict[pathlib.Path, FileDescription]:
+def load_descriptions(references: Iterable[TextIO]) -> dict[pathlib.Path, FileDescription]:
     descriptions = [
         FileDescription.parse(
             line,
@@ -189,11 +188,11 @@ def describe_differences(
     expected: Mapping[pathlib.Path, FileDescription],
     current: Mapping[pathlib.Path, MaybeFileDescription],
 ) -> ChangeSummary:
-    missing: List[pathlib.Path] = []
-    actual: Dict[pathlib.Path, FileDescription] = {}
-    unexpected: Dict[pathlib.Path, FileDescription] = {}
+    missing: list[pathlib.Path] = []
+    actual: dict[pathlib.Path, FileDescription] = {}
+    unexpected: dict[pathlib.Path, FileDescription] = {}
 
-    changed: List[ChangedFile] = []
+    changed: list[ChangedFile] = []
 
     for filepath, description in current.items():
         if isinstance(description, MissingFile):
@@ -215,10 +214,10 @@ def describe_differences(
         x for x in current.values() if isinstance(x, FileDescription)
     )
 
-    copied: List[CopiedFile] = []
-    moved: List[MovedFile] = []
-    deleted: List[MissingFile] = []
-    new_files: List[FileDescription] = []
+    copied: list[CopiedFile] = []
+    moved: list[MovedFile] = []
+    deleted: list[MissingFile] = []
+    new_files: list[FileDescription] = []
 
     for missing_path in missing:
         expected_content = expected[missing_path].content
@@ -291,7 +290,7 @@ def compare(baseline: TextIO, target: TextIO) -> None:
     """Compare records in the given files."""
 
     baseline_descriptions = load_descriptions([baseline])
-    target_descriptions: Dict[pathlib.Path, MaybeFileDescription] = dict(
+    target_descriptions: dict[pathlib.Path, MaybeFileDescription] = dict(
         load_descriptions([target]),
     )
 
@@ -310,10 +309,10 @@ def compare(baseline: TextIO, target: TextIO) -> None:
 
 @cli.command('find-duplicates')
 @click.argument('references', required=True, nargs=-1, type=click.File('rt'))
-def find_duplicates(references: List[TextIO]) -> None:
+def find_duplicates(references: list[TextIO]) -> None:
     """Search for duplicates within the given files."""
 
-    all_by_content: Dict[ContentDescription, List[pathlib.Path]] = {}
+    all_by_content: dict[ContentDescription, list[pathlib.Path]] = {}
 
     descriptions = load_descriptions(references)
     for path, description in descriptions.items():
