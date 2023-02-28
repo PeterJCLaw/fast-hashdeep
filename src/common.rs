@@ -1,18 +1,18 @@
+use std::borrow::ToOwned;
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::borrow::ToOwned;
 use std::fmt;
 use std::fs::File;
 use std::fs::Metadata;
-use std::io::Read;
-use std::io::BufReader;
 use std::io::BufRead;
+use std::io::BufReader;
+use std::io::Read;
 use std::iter::FromIterator;
 use std::iter::Iterator;
-use std::path::PathBuf;
 use std::path::Path;
-use std::vec::Vec;
+use std::path::PathBuf;
 use std::time::UNIX_EPOCH;
+use std::vec::Vec;
 
 use chrono::naive::NaiveDateTime;
 use md5;
@@ -82,7 +82,9 @@ impl MissingFile {
     where
         P: AsRef<Path>,
     {
-        MissingFile { path: filepath.as_ref().to_path_buf() }
+        MissingFile {
+            path: filepath.as_ref().to_path_buf(),
+        }
     }
 }
 
@@ -101,7 +103,9 @@ impl FileDescription {
 
 impl fmt::Display for FileDescription {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{},{},{},{}",
+        write!(
+            f,
+            "{},{},{},{}",
             self.modified.format(DATE_FORMAT),
             self.content.size,
             self.content.hash,
@@ -148,7 +152,6 @@ impl FileDescription {
     }
 }
 
-
 #[derive(Debug)]
 pub struct ChangeSummary {
     changed: Vec<ChangedFile>,
@@ -160,8 +163,11 @@ pub struct ChangeSummary {
 
 impl ChangeSummary {
     pub fn has_changes(&self) -> bool {
-        self.changed.len() > 0 || self.copied.len() > 0 || self.moved.len() > 0 ||
-            self.deleted.len() > 0 || self.added.len() > 0
+        self.changed.len() > 0
+            || self.copied.len() > 0
+            || self.moved.len() > 0
+            || self.deleted.len() > 0
+            || self.added.len() > 0
     }
 
     fn descriptions<'a, T, F>(items: &Vec<T>, title: &'a str, item_formatter: F) -> Option<String>
@@ -205,20 +211,19 @@ impl ChangeSummary {
             moved_descriptions,
             deleted_descriptions,
             added_descriptions,
-        ].into_iter()
-            .filter_map(|x| x)
-            .collect();
+        ]
+        .into_iter()
+        .filter_map(|x| x)
+        .collect();
         descriptions.join("\n")
     }
 }
-
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum MaybeFileDescription {
     MissingFile(MissingFile),
     FileDescription(FileDescription),
 }
-
 
 // TODO: this would ideally return `-> impl Iterator<Item = PathBuf>`, but
 // that's not stable yet.
@@ -234,7 +239,6 @@ where
         .collect()
 }
 
-
 pub fn hash_file<P>(filepath: P) -> String
 where
     P: AsRef<Path>,
@@ -245,7 +249,6 @@ where
     let digest = md5::compute(&buffer[..read_size]);
     format!("{:x}", digest)
 }
-
 
 pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
     fn from_metadata(metadata: &Metadata) -> NaiveDateTime {
@@ -271,16 +274,16 @@ pub fn describe(filepath: PathBuf) -> MaybeFileDescription {
     }
 }
 
-
 pub fn path_by_content<'a, I>(descriptions: I) -> HashMap<&'a ContentDescription, &'a Path>
 where
     I: IntoIterator<Item = &'a FileDescription>,
 {
-    HashMap::from_iter(descriptions.into_iter().map(
-        |x| (&x.content, x.path.as_path()),
-    ))
+    HashMap::from_iter(
+        descriptions
+            .into_iter()
+            .map(|x| (&x.content, x.path.as_path())),
+    )
 }
-
 
 pub fn load_descriptions<'a, I, P>(references: I) -> HashMap<PathBuf, FileDescription>
 where
@@ -302,7 +305,6 @@ where
             .map(|x| (x.path.clone(), x)),
     )
 }
-
 
 pub fn describe_differences(
     expected: &HashMap<PathBuf, FileDescription>,
@@ -356,13 +358,13 @@ pub fn describe_differences(
         let missing_path_buf = missing_path.to_path_buf();
         let expected_content = &expected.get(&missing_path_buf).unwrap().content;
         match path_by_actual_content.get(expected_content) {
-            Some(new_path) => {
-                moved.push(MovedFile {
-                    old: missing_path_buf,
-                    new: new_path.to_path_buf(),
-                })
-            }
-            None => deleted.push(MissingFile { path: missing_path_buf }),
+            Some(new_path) => moved.push(MovedFile {
+                old: missing_path_buf,
+                new: new_path.to_path_buf(),
+            }),
+            None => deleted.push(MissingFile {
+                path: missing_path_buf,
+            }),
         }
     }
 
