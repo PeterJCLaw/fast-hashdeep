@@ -1,13 +1,12 @@
-extern crate structopt;
-
 extern crate chrono;
+extern crate clap;
 extern crate itertools;
 extern crate md5;
 extern crate walkdir;
 
+use clap::StructOpt;
 use std::path::PathBuf;
 use std::vec::Vec;
-use structopt::StructOpt;
 
 mod common;
 mod handlers;
