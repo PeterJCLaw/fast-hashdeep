@@ -14,7 +14,7 @@ mod handlers;
 use handlers::{audit, compare, find_duplicates, record};
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "fash-hashdeep")]
+#[structopt(name = "fast-hashdeep")]
 enum Opt {
     #[structopt(name = "record")]
     /// Record the current state of the directory
