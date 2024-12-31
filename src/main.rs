@@ -4,7 +4,7 @@ extern crate itertools;
 extern crate md5;
 extern crate walkdir;
 
-use clap::StructOpt;
+use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::vec::Vec;
 
@@ -12,46 +12,52 @@ mod common;
 mod handlers;
 use handlers::{audit, compare, find_duplicates, record};
 
-#[derive(Debug, StructOpt)]
-#[structopt(name = "fast-hashdeep")]
+#[derive(Debug, Parser)]
+struct Cli {
+    #[command(subcommand)]
+    command: Opt,
+}
+
+#[derive(Debug, Subcommand)]
+#[command(name = "fast-hashdeep")]
 enum Opt {
-    #[structopt(name = "record")]
+    #[command(name = "record")]
     /// Record the current state of the directory
     Record {
-        #[structopt(parse(from_os_str))]
+        #[arg()]
         directory: PathBuf,
     },
 
-    #[structopt(name = "audit")]
+    #[command(name = "audit")]
     /// Audit records in the given files
     Audit {
-        #[structopt(parse(from_os_str))]
+        #[arg()]
         directory: PathBuf,
 
-        #[structopt(parse(from_os_str))]
+        #[arg()]
         references: Vec<PathBuf>,
     },
 
-    #[structopt(name = "compare")]
+    #[command(name = "compare")]
     /// Compare records in the given files
     Compare {
-        #[structopt(parse(from_os_str))]
+        #[arg()]
         baseline: PathBuf,
 
-        #[structopt(parse(from_os_str))]
+        #[arg()]
         target: PathBuf,
     },
 
-    #[structopt(name = "find-duplicates")]
+    #[command(name = "find-duplicates")]
     /// Search for duplicates within the given files
     FindDuplicates {
-        #[structopt(parse(from_os_str))]
+        #[arg()]
         references: Vec<PathBuf>,
     },
 }
 
 fn main() {
-    let matches = Opt::from_args();
+    let matches = Cli::parse().command;
 
     match matches {
         Opt::Record { directory } => record(directory),
